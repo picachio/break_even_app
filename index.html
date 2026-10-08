@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Break Even Calculator">
+  <title>Break Even Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #eef4ff 0%, #f8fafc 100%);
+      color: #1f2937;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 10px 35px rgba(15, 23, 42, 0.10);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      color: #173a6b;
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.98rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .currency {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input.currency-input {
+      padding-left: 32px;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .help {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: #64748b;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 4px;
+      background: #2563eb;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .result {
+      display: none;
+      margin-top: 26px;
+      padding: 22px;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      text-align: center;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-label {
+      color: #475569;
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+    }
+
+    .break-even-number {
+      font-size: clamp(2.1rem, 8vw, 3rem);
+      font-weight: 800;
+      color: #1d4ed8;
+      line-height: 1.1;
+    }
+
+    .result-text {
+      margin-top: 7px;
+      color: #334155;
+      font-size: 0.95rem;
+    }
+
+    .error {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 9px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      font-size: 0.9rem;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .formula {
+      margin-top: 24px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #f8fafc;
+      color: #475569;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    .formula strong {
+      color: #334155;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+
+      .card {
+        padding: 22px 18px;
+        border-radius: 14px;
+      }
+
+      .subtitle {
+        margin-bottom: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>Break Even Calculator</h1>
+      <p class="subtitle">
+        Enter your costs and selling price to calculate the number of units needed to break even.
+      </p>
+
+      <form id="breakEvenForm">
+        <div class="form-group">
+          <label for="fixedCost">Fixed Cost</label>
+          <div class="input-wrapper">
+            <span class="currency">$</span>
+            <input
+              id="fixedCost"
+              class="currency-input"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g., 10000"
+              inputmode="decimal"
+              required
+            >
+          </div>
+          <div class="help">Total costs that do not change with production volume.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="variableCost">Variable Cost per Unit</label>
+          <div class="input-wrapper">
+            <span class="currency">$</span>
+            <input
+              id="variableCost"
+              class="currency-input"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g., 25"
+              inputmode="decimal"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salesPrice">Sales Price per Unit</label>
+          <div class="input-wrapper">
+            <span class="currency">$</span>
+            <input
+              id="salesPrice"
+              class="currency-input"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g., 50"
+              inputmode="decimal"
+              required
+            >
+          </div>
+        </div>
+
+        <button type="submit">Calculate Break Even Point</button>
+      </form>
+
+      <div id="error" class="error" role="alert"></div>
+
+      <div id="result" class="result" aria-live="polite">
+        <div class="result-label">Break-Even Point</div>
+        <div id="breakEvenNumber" class="break-even-number">0 units</div>
+        <div id="resultText" class="result-text"></div>
+      </div>
+
+      <div class="formula">
+        <strong>Formula:</strong>
+        Break-Even Units = Fixed Cost ÷ (Sales Price per Unit − Variable Cost per Unit)
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("breakEvenForm");
+    const result = document.getElementById("result");
+    const error = document.getElementById("error");
+    const breakEvenNumber = document.getElementById("breakEvenNumber");
+    const resultText = document.getElementById("resultText");
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const fixedCost = parseFloat(document.getElementById("fixedCost").value);
+      const variableCost = parseFloat(document.getElementById("variableCost").value);
+      const salesPrice = parseFloat(document.getElementById("salesPrice").value);
+
+      result.classList.remove("show");
+      error.classList.remove("show");
+
+      if (
+        Number.isNaN(fixedCost) ||
+        Number.isNaN(variableCost) ||
+        Number.isNaN(salesPrice)
+      ) {
+        showError("Please enter a value in all three fields.");
+        return;
+      }
+
+      if (fixedCost < 0 || variableCost < 0 || salesPrice < 0) {
+        showError("Costs and sales price cannot be negative.");
+        return;
+      }
+
+      const contributionMargin = salesPrice - variableCost;
+
+      if (contributionMargin <= 0) {
+        showError(
+          "The sales price per unit must be greater than the variable cost per unit to calculate a break-even point."
+        );
+        return;
+      }
+
+      const breakEvenUnits = fixedCost / contributionMargin;
+      const unitsToProduce = Math.ceil(breakEvenUnits);
+
+      breakEvenNumber.textContent =
+        unitsToProduce.toLocaleString() + " units";
+
+      resultText.textContent =
+        "You need to produce and sell at least " +
+        unitsToProduce.toLocaleString() +
+        " units to break even.";
+
+      result.classList.add("show");
+    });
+
+    function showError(message) {
+      error.textContent = message;
+      error.classList.add("show");
+    }
+  </script>
+</body>
+</html>
